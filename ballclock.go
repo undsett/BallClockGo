@@ -11,14 +11,16 @@ import (
 )
 
 var (
-	oneMinute Track
-	fiveMinute Track
-	oneHour Track
-	mainTrack Track
+	oneMinute    Track
+	fiveMinute   Track
+	oneHour      Track
+	mainTrack    Track
 	defaultValue Stack
-	minutes int
-	cycles = 1
-	start time.Time
+	minutes      int
+	cycles       = 1
+	running      = true
+	start        time.Time
+	duration     = time.Duration(0)
 )
 
 func main() {
@@ -69,9 +71,10 @@ func newBallClock(balls int, min int) {
 }
 
 func runClock() {
-	start := time.Now()
+	start = time.Now()
+	defer printTime()
 	if minutes == 0 {
-		for {
+		for running {
 			mainTrack.move(&mainTrack)
 			cycles++
 			}
@@ -80,10 +83,8 @@ func runClock() {
 			mainTrack.move(&mainTrack)
 			cycles++
 		}
-		duration := time.Since(start)
+		duration = time.Since(start)
 		printJson()
-		fmt.Println("Completed in",  duration)
-		os.Exit(0)
 	}
 }
 
@@ -128,11 +129,9 @@ Loop:
 	}
 	pushOrRelease(ball, track, mainTrack)
 		if Equal(mainTrack.rail, defaultValue) {
-			duration := time.Since(start)
 			fmt.Printf("%v  balls cycle after %v  days.\n", mainTrack.capacity, cycles/1440)
-			fmt.Println("Completed in",  duration.Milliseconds() / 10e9, "milliseconds" ,  float32(duration.Milliseconds()) / 10e12, "seconds", duration)
-			fmt.Printf("%6.2e", duration.Seconds())
-			os.Exit(0)
+			duration = time.Since(start)
+			running = false
 		}
 
 }
@@ -177,6 +176,9 @@ func intToString (stack Stack) []string {
 		result = append(result, strconv.Itoa(int(v)))
 	}
 	return result
+}
+func printTime() {
+	fmt.Println("Completed in", duration)
 }
 
 type Stack []uint8
