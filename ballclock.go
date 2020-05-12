@@ -128,11 +128,14 @@ Loop:
 		}
 	}
 	pushOrRelease(ball, track, mainTrack)
-		if Equal(mainTrack.rail, defaultValue) {
-			fmt.Printf("%v  balls cycle after %v  days.\n", mainTrack.capacity, cycles/1440)
-			duration = time.Since(start)
-			running = false
+		if track.nextTrack == mainTrack {
+			if Equal(mainTrack.rail, defaultValue) {
+				fmt.Printf("%v  balls cycle after %v  days.\n", mainTrack.capacity, cycles/1440)
+				duration = time.Since(start)
+				running = false
+			}
 		}
+
 
 }
 
